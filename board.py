@@ -53,22 +53,6 @@ def free(b: Board, s: int) -> bool:
     """
     return not s in b.white and not s in b.black
 
-# def x_change(m: Move) -> int:
-#    """
-#    Returns how much a peice is moved horizontally in a given move
-#    >>>y_change(Move (src=1, trg=3))
-#    2
-#    """
-#    return (target(m)-source(m))%5
-
-# def y_change(m: Move) -> int:
-#    """
-#    Returns how much a peice is moved vertically in a given move
-#    >>>x_change(Move (src=1, trg=11))
-#    2
-#    """
-#    return math.ceil(target(m)/5)-math.ceil(source(m)/5)
-
 def is_legal(m: Move, b: Board) -> bool:
     """
     Checks if a given move is legal or not
