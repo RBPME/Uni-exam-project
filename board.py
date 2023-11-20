@@ -1,4 +1,3 @@
-import math
 from dataclasses import dataclass
 from move import *
 
@@ -51,72 +50,100 @@ def free(b: Board, s: int) -> bool:
     >>>free(Board (white=[1], black=[], is_whites_turn=True),10)
     True
     """
-    return not s in b.white and not s in b.black
+    return not s in white(b) and not s in black(b)
+
+def moves_double(m: Move) -> bool:
+    """
+    Checks if a given move moves a peice 2 spaces in a straight line
+    >>>moves_double(Move (src=1, trg=11))
+    True
+    >>>moves_double(Move (src=1, trg=6))
+    False
+    """
+    if abs(difference(m)) > 12:
+        return False
+    elif abs(difference(m)) == 4 or abs(difference(m)) == 6:
+        return False
+    elif difference(m) % 2 == 1:
+        return False
+    else:
+        if source(m) % 5 == 0 or source(m) % 5 == 4:
+            return difference(m) != 12 and difference(m) != -8 and difference(m) != 2
+        elif source(m) % 5 == 1 or source(m) % 5 == 2:
+            return difference(m) != 8 and difference(m) != -12 and difference(m) != -2
+        else:
+            return True
 
 def is_legal(m: Move, b: Board) -> bool:
     """
     Checks if a given move is legal or not
     """
-    if b.is_whites_turn and not source(m) in b.white:
+    if not free(b,target(m)):
         return False
-    elif not b.is_whites_turn and not source(m) in b.black:
+    elif not source(m) in range(1,26) or not target(m) in range(1,26):
         return False
-    elif not free(b,target(m)):
-        return False
-    elif not source(m) in range(1,25) or not target(m) in range(1,25):
-        return False
-    elif b.is_whites_turn and m.src + 5 == m.trg:
-        return True
-    elif not b.is_whites_turn and m.src - 5 == m.trg:
-        return True
-    elif b.is_whites_turn and m.src % 2 == 1 and m.src + 4 == m.trg:
-        return True
-    elif b.is_whites_turn and m.src % 2 == 1 and m.src + 6 == m.trg:
-        return True
-    elif not b.is_whites_turn and m.src % 2 == 1 and m.src - 4 == m.trg:
-        return True
-    elif not b.is_whites_turn and m.src % 2 == 1 and m.src - 6 == m.trg:
-        return True
-    elif b.is_whites_turn and m.src + 5 in b.black and m.src + 10 == m.trg:
-        return True
-    elif not b.is_whites_turn and m.src + 5 in b.white and m.src + 10 == m.trg:
-        return True
-    elif b.is_whites_turn and m.src - 5 in b.black and m.src - 10 == m.trg:
-        return True
-    elif not b.is_whites_turn and m.src - 5 in b.white and m.src - 10 == m.trg:
-        return True
-    elif b.is_whites_turn and m.src + 1 in b.black and m.src + 2 == m.trg:
-        return True
-    elif not b.is_whites_turn and m.src + 1 in b.white and m.src + 2 == m.trg:
-        return True
-    elif b.is_whites_turn and m.src - 1 in b.black and m.src - 2 == m.trg:
-        return True
-    elif not b.is_whites_turn and m.src - 1 in b.white and m.src - 2 == m.trg:
-        return True
-    elif b.is_whites_turn and m.src + 6 in b.black and m.src + 12 == m.trg:
-        return True
-    elif not b.is_whites_turn and m.src + 6 in b.white and m.src + 12 == m.trg:
-        return True
-    elif b.is_whites_turn and m.src - 6 in b.black and m.src - 12 == m.trg:
-        return True
-    elif not b.is_whites_turn and m.src - 6 in b.white and m.src - 12 == m.trg:
-        return True
-    elif b.is_whites_turn and m.src + 4 in b.black and m.src + 8 == m.trg:
-        return True
-    elif not b.is_whites_turn and m.src + 4 in b.white and m.src + 8 == m.trg:
-        return True
-    elif b.is_whites_turn and m.src - 4 in b.black and m.src - 8 == m.trg:
-        return True
-    elif not b.is_whites_turn and m.src - 4 in b.white and m.src - 8 == m.trg:
-        return True
+    elif white_plays(b):
+        if not source(m) in white(b):
+            return False
+        elif difference(m) == 4:
+            return source(m) % 2 == 1 and source(m) % 5 != 1
+        elif difference(m) == 6:
+            return source(m) % 2 == 1 and source(m) % 5 != 0
+        elif moves_double(m):
+            return difference(m)/2 + source(m) in black(b)
+        else:
+            return difference(m) == 5
     else:
-        return False
+        if not source(m) in black(b):
+            return False
+        elif difference(m) == -4:
+            return source(m) % 2 == 1 and source(m) % 5 != 0
+        elif difference(m) == -6:
+            return source(m) % 2 == 1 and source(m) % 5 != 1
+        elif moves_double(m):
+            return difference(m)/2 + source(m) in white(b)
+        else:
+            return difference(m) == -5
     
 def legal_moves(b: Board) -> list[Move]:
     """
     Returns a list of all legal moves on a given board
     """
     res=[]
-    for x in range(1,25):
-        res = res + [make_move(x,y) for y in range(1,25) if is_legal(make_move(x,y),b)]
+    for x in range(1,26):
+        res = res + [make_move(x,y) for y in range(1,26) if is_legal(make_move(x,y),b)]
     return res
+
+def move(m: Move, b: Board) -> None:
+    """
+    Updates the board by simulating a move
+    """
+    if moves_double(m):
+        b.white = [x for x in white(b) if x != difference(m)/2+source(m)]
+        b.black = [x for x in black(b) if x != difference(m)/2+source(m)]
+    if white_plays(b):
+        b.white = [x for x in white(b) if x != source(m)] + [target(m)]
+    else:
+        b.black = [x for x in black(b) if x != source(m)] + [target(m)]
+    b.is_whites_turn = not b.is_whites_turn
+
+def is_game_over(b: Board) -> bool:
+    """
+    Checks if the game is over or not
+    >>>is_game_over(Board (white=[], black=[], is_whites_turn=Tue))
+    False
+    """
+    if white(b) == [] or black(b) == []:
+        return True
+    elif legal_moves(b) == []:
+        return True
+    else:
+        return False
+    
+def copy(b: Board) -> Board:
+    """
+    Returns a copy of a board
+    >>>copy(Board (white=[], black=[], is_whites_turn=True))
+    Board (white=[], black=[], is_whites_turn=True)
+    """
+    return b

@@ -29,3 +29,11 @@ def target(m: Move) -> int:
     6
     """
     return m.trg
+
+def difference(m: Move) -> int:
+    """
+    Returns the difference between the target and the source of a move
+    >>>difference(Move (src=5, trg=11))
+    6
+    """
+    return target(m) - source(m)
