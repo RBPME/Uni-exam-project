@@ -72,7 +72,7 @@ def moves_double(m: Move) -> bool:
         elif source(m) % 5 == 1 or source(m) % 5 == 2:
             return difference(m) != 8 and difference(m) != -12 and difference(m) != -2
         else:
-            return True
+            return abs(difference(m)) == 2 or abs(difference(m)) == 10 or source(m) % 2 == 1
 
 def is_legal(m: Move, b: Board) -> bool:
     """
