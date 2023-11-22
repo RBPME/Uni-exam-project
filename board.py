@@ -13,7 +13,7 @@ def make_board() -> Board:
     >>>make_board()
     board (wihte=[1,2,3,4,5,6,7,8,9,10,11,12], black=[14,15,16,17,18,19,20,21,22,23,24,25], is_whites_turn=True)
     """
-    return Board([x for x in range(1,13)], [y for y in range(14,26)], True)
+    return Board([x for x in range(14,26)], [y for y in range(1,13)], True)
 
 def white_plays(b: Board) -> bool:
     """
@@ -85,25 +85,25 @@ def is_legal(m: Move, b: Board) -> bool:
     elif white_plays(b):
         if not source(m) in white(b):
             return False
-        elif difference(m) == 4:
-            return source(m) % 2 == 1 and source(m) % 5 != 1
-        elif difference(m) == 6:
-            return source(m) % 2 == 1 and source(m) % 5 != 0
-        elif moves_double(m):
-            return difference(m)/2 + source(m) in black(b)
-        else:
-            return difference(m) == 5
-    else:
-        if not source(m) in black(b):
-            return False
         elif difference(m) == -4:
             return source(m) % 2 == 1 and source(m) % 5 != 0
         elif difference(m) == -6:
             return source(m) % 2 == 1 and source(m) % 5 != 1
         elif moves_double(m):
-            return difference(m)/2 + source(m) in white(b)
+            return difference(m)/2 + source(m) in black(b)
         else:
             return difference(m) == -5
+    else:
+        if not source(m) in black(b):
+            return False
+        elif difference(m) == 4:
+            return source(m) % 2 == 1 and source(m) % 5 != 1
+        elif difference(m) == 6:
+            return source(m) % 2 == 1 and source(m) % 5 != 0
+        elif moves_double(m):
+            return difference(m)/2 + source(m) in white(b)
+        else:
+            return difference(m) == 5
     
 def legal_moves(b: Board) -> list[Move]:
     """
