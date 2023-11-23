@@ -100,7 +100,7 @@ def attacked_space(m: Move) -> int:
 
 def moves_through_edge(m: Move) -> bool:
     """
-    Precondition: A peice is moved at most 2 spaces
+    Precondition: A peice is not moved more than 2 spaces
     Checks if a move goes through the edge of the board
     >>>moves_through_edge(src=5, trg=6)
     True
